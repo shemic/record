@@ -1,0 +1,116 @@
+1.切换到root账户：
+sudo su
+
+2 安装 MySQL 5
+apt-get install mysql-server mysql-client
+系统会提示你设置密码
+
+3 安装 Nginx
+apt-get install nginx
+启动Nginx服务：
+service nginx start
+去浏览器看一下：http://localhost
+
+5 设置 nginx ,修改文件：
+vi /etc/nginx/nginx.conf
+修改一些主机的基本配置
+
+虚拟主机配置文件修改：
+vi /etc/nginx/sites-available/blog
+修改代码如下面的显示：
+server {
+    listen 80;
+
+    root /workspace/web/robin/blog/;
+    index index.html index.htm index.php entry.php;
+
+    # Make site accessible from http://localhost/
+    server_name blog.robin.com.cn;
+
+    set $rewrite yes;
+    location ~ ^/favicon\.ico$ {
+        root    /workspace/web/robin/blog/
+    }
+
+    if ( $request_uri ~* ^/(data|public|assets|crossdomain\.xml|index\.php|favicon\.ico) ) {
+        set $rewrite no;
+    }
+
+
+    if ($rewrite ~* yes) {
+        rewrite ^/(.*) /index.php/$1 last;
+    }
+
+    location ~ /(data|public|assets|crossdomain\.xml)
+    {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location / {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+
+    location /doc/ {
+            alias /usr/share/doc/;
+            autoindex on;
+            allow 127.0.0.1;
+            allow ::1;
+            deny all;
+    }
+    # Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests
+    #location /RequestDenied {
+    #       proxy_pass http://127.0.0.1:8080;    
+    #}
+
+    #error_page 404 /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    #error_page 500 502 503 504 /50x.html;
+    #location = /50x.html {
+    #       root /usr/share/nginx/html;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+
+            # With php5-cgi alone:
+            #fastcgi_pass 127.0.0.1:9000;
+            # With php5-fpm:
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi_params;
+    }
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #       deny all;
+    #}
+}
+重新加载nginx:
+service nginx restart
+
+4 安装 PHP5
+apt-get install php5-fpm
+
+安装好后执行 php -i
+
+注意：此处如果报错，直接安装缺少组件即可
+
+扩展：
+
+查询PHP模块：
+apt-cache search php5
+
+例如输入下面安装你要的模块：
+apt-get install php5-mysql php5-curl php5-gd php5-intl php-pear php5-imagick php5-imap php5-mcrypt php5-memcache php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php5-redis
+安装完毕之后重启php5-fpm
+service php5-fpm restart
