@@ -16,20 +16,36 @@ vi /etc/nginx/nginx.conf
 修改一些主机的基本配置
 
 虚拟主机配置文件修改：
-vi /etc/nginx/sites-available/blog
-修改代码如下面的显示：
+vi /etc/nginx/sites-enabled/default
+增加如下代码(要修改$rootdir的值)：
 server {
+    server_name localhost *.robin.com;
     listen 80;
+    
+    autoindex on;
 
-    root /workspace/web/robin/blog/;
-    index index.html index.htm index.php entry.php;
+    set $charset utf-8;
 
-    # Make site accessible from http://localhost/
-    server_name blog.robin.com.cn;
+    charset $charset;
+
+    set $rootdir /home/leo/workspace/localhost;
+
+    if ( $host ~* "^([^\.]+)\.robin\.com$" ) {
+        set $rootdir $rootdir/robin/$1;
+        set $project $1;
+    }
+
+    root $rootdir;
+    index index.php index.html;
 
     set $rewrite yes;
+
     location ~ ^/favicon\.ico$ {
-        root    /workspace/web/robin/blog/
+        root $rootdir;
+    }
+    
+    location ~* (.*).tpl {
+        return 404;
     }
 
     if ( $request_uri ~* ^/(data|public|assets|crossdomain\.xml|index\.php|favicon\.ico) ) {
@@ -46,57 +62,30 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    location / {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php5-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
-    }
+	location /doc/ {
+		alias /usr/share/doc/;
+		autoindex on;
+		allow 127.0.0.1;
+		allow ::1;
+		deny all;
+	}
 
-    location /doc/ {
-            alias /usr/share/doc/;
-            autoindex on;
-            allow 127.0.0.1;
-            allow ::1;
-            deny all;
-    }
-    # Only for nginx-naxsi used with nginx-naxsi-ui : process denied requests
-    #location /RequestDenied {
-    #       proxy_pass http://127.0.0.1:8080;    
-    #}
-
-    #error_page 404 /404.html;
-
-    # redirect server error pages to the static page /50x.html
-    #
-    #error_page 500 502 503 504 /50x.html;
-    #location = /50x.html {
-    #       root /usr/share/nginx/html;
-    #}
-
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
-    location ~ \.php$ {
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
-
-            # With php5-cgi alone:
-            #fastcgi_pass 127.0.0.1:9000;
-            # With php5-fpm:
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_index index.php;
-            include fastcgi_params;
-    }
-
-    # deny access to .htaccess files, if Apache's document root
-    # concurs with nginx's one
-    #
-    #location ~ /\.ht {
-    #       deny all;
-    #}
+	location / {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		# NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+	
+		# With php5-cgi alone:
+		#fastcgi_pass 127.0.0.1:9000;
+		# With php5-fpm:
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
 }
 重新加载nginx:
 service nginx restart
+
+记得修改/etc/hosts
 
 4 安装 PHP5
 apt-get install php5-fpm
