@@ -1,0 +1,11 @@
+site：https://getcomposer.org/
+
+1、更新单个库：
+
+composer update foo/bar
+
+2、不编辑composer.json的情况下安装库
+composer init --require=foo/bar:1.0.0 -n
+
+3、为生产环境作准备
+composer dump-autoload --optimize
