@@ -8,8 +8,8 @@ wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - 
 
 
 资料：
-<a href="http://macshuo.com/?p=676">http://macshuo.com/?p=676</a>
+http://macshuo.com/?p=676
 
-<a href="https://github.com/robbyrussell/oh-my-zsh">https://github.com/robbyrussell/oh-my-zsh</a>
+https://github.com/robbyrussell/oh-my-zsh
 
-<a href="http://www.cnblogs.com/dusiliang/p/3561918.html">http://www.cnblogs.com/dusiliang/p/3561918.html</a>
+http://www.cnblogs.com/dusiliang/p/3561918.html
