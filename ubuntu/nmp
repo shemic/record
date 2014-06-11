@@ -82,6 +82,12 @@ server {
 	include fastcgi_params;
     }
 }
+注：如果无法获取path_info，则要在fastcgi_params文件中增加：
+ # PHP only, required if PHP was built with --enable-force-cgi-redirect
+ fastcgi_param   REDIRECT_STATUS     200;
+ fastcgi_param PATH_INFO $fastcgi_path_info;
+ fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+ 
 重新加载nginx:
 service nginx restart
 
