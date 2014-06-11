@@ -1,2 +1,16 @@
 git ignore 无法生效的原因：
 http://blog.longwin.com.tw/2010/01/git-ignore-howto-set-zim-2010/
+
+因為第一次 commit 已經將 .zim/*.cache commit 進去了, 所以每次它都會去檢查, 造成都出現 modified 的狀況.
+git rm -f .zim/history.cache
+git rm -f .zim/index.cache
+git commit # 即可
+再將 .gitignore 設定好, 就可以避免掉這些狀況囉~
+範例 -我的 Zim 設定方式
+cd /home/user/doc
+vim .gitignore
+.zim/*.cache
+
+git add .gitignore
+git commit
+git push
