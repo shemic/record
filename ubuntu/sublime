@@ -1,0 +1,9 @@
+安装：
+
+sudo add-apt-repository ppa:webupd8team/sublime-text-3  
+sudo apt-get update  
+sudo apt-get install sublime-text-installer  
+
+如果不想显示新版本提示，可以打开Perferences > Setting > User，添加：
+
+"update_check": false  
