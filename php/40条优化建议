@@ -1,0 +1,85 @@
+1. If a method can be static, declare it static. Speed improvement is by a factor of 4. 如果一个方法可静态化，就对它做静态声明。速率可提升至4倍。
+
+2. echo is faster than print. echo 比 print 快。
+
+3. Use echo’s multiple parameters instead of string concatenation. 使用echo的多重参数（译注：指用逗号而不是句点）代替字符串连接。
+
+4. Set the maxvalue for your for-loops before and not in the loop. 在执行for循环之前确定最大循环数，不要每循环一次都计算最大值。
+
+5. Unset your variables to free memory, especially large arrays. 注销那些不用的变量尤其是大数组，以便释放内存。
+
+6. Avoid magic like __get, __set, __autoload 尽量避免使用__get，__set，__autoload。
+
+7. require_once() is expensive require_once()代价昂贵。
+
+8. Use full paths in includes and requires, less time spent on resolving the OS paths. 在包含文件时使用完整路径，解析操作系统路径所需的时间会更少。
+
+9. If you need to find out the time when the script started executing, $_SERVER[’REQUEST_TIME’] is preferred to time() 如果你想知道脚本开始执行（译注：即服务器端收到客户端请求）的时刻，使用$_SERVER[‘REQUEST_TIME’]要好于time()。
+
+10. See if you can use strncasecmp, strpbrk and stripos instead of regex. 检查是否能用strncasecmp，strpbrk，stripos函数代替正则表达式完成相同功能。
+
+11. str_replace is faster than preg_replace, but strtr is faster than str_replace by a factor of 4. str_replace函数比preg_replace函数快，但strtr函数的效率是str_replace函数的四倍。
+
+12. If the function, such as string replacement function, accepts both arrays and single characters as arguments, and if your argument list is not too long, consider writing a few redundant replacement statements, passing one character at a time, instead of one line of code that accepts arrays as search and replace arguments. 如果一个字符串替换函数，可接受数组或字符作为参数，并且参数长度不太长，那么可以考虑额外写一段替换代码，使得每次传递参数是一个字符，而不是只写一行代码接受数组作为查询和替换的参数。
+
+13. It’s better to use select statements than multi if, else if, statements. 使用选择分支语句（译注：即switch case）好于使用多个if，else if语句。
+
+14. Error suppression with @ is very slow. 用@屏蔽错误消息的做法非常低效。
+
+15. Turn on apache’s mod_deflate 打开apache的mod_deflate模块。
+
+16. Close your database connections when you’re done with them. 数据库连接当使用完毕时应关掉。
+
+17. $row[’id’] is 7 times faster than $row[id]. $row[‘id’]的效率是$row[id]的7倍。
+
+18. Error messages are expensive. 错误消息代价昂贵。
+
+19. Do not use functions inside of for loop, such as for ($x=0; $x < count($array); $x) The count() function gets called each time. 尽量不要在for循环中使用函数，比如for ($x=0; $x < count($array); $x)每循环一次都会调用count()函数。
+
+20. Incrementing a local variable in a method is the fastest. Nearly the same as calling a local variable in a function. 在方法中递增局部变量，速度是最快的。几乎与在函数中调用局部变量的速度相当。
+
+21. Incrementing a global variable is 2 times slow than a local var. 递增一个全局变量要比递增一个局部变量慢2倍。
+
+22. Incrementing an object property (eg. $this->prop++) is 3 times slower than a local variable. 递增一个对象属性（如：$this->prop++）要比递增一个局部变量慢3倍。
+
+23. Incrementing an undefined local variable is 9-10 times slower than a pre-initialized one. 递增一个未预定义的局部变量要比递增一个预定义的局部变量慢9至10倍。
+
+24. Just declaring a global variable without using it in a function also slows things down (by about the same amount as incrementing a local var). PHP probably does a check to see if the global exists. 仅定义一个局部变量而没在函数中调用它，同样会减慢速度（其程度相当于递增一个局部变量）。PHP大概会检查看是否存在全局变量。
+
+25. Method invocation appears to be independent of the number of methods defined in the class because I added 10 more methods to the test class (before and after the test method) with no change in performance. 方法调用看来与类中定义的方法的数量无关，因为我（在测试方法之前和之后都）添加了10个方法，但性能上没有变化。
+
+26. Methods in derived classes run faster than ones defined in the base class. 派生类中的方法运行起来要快于在基类中定义的同样的方法。
+
+27. A function call with one parameter and an empty function body takes about the same time as doing 7-8 $localvar++ operations. A similar method call is of course about 15 $localvar++ operations. 调用带有一个参数的空函数，其花费的时间相当于执行7至8次的局部变量递增操作。类似的方法调用所花费的时间接近于15次的局部变量递增操作。
+
+28. Surrounding your string by ‘ instead of " will make things interpret a little faster since php looks for variables inside "…" but not inside ‘…’. Of course you can only do this when you don’t need to have variables in the string. 用单引号代替双引号来包含字符串，这样做会更快一些。因为PHP会在双引号包围的字符串中搜寻变量，单引号则不会。当然，只有当你不需要在字符串中包含变量时才可以这么做。
+
+29. When echoing strings it’s faster to separate them by comma instead of dot. Note: This only works with echo, which is a function that can take several strings as arguments. 输出多个字符串时，用逗号代替句点来分隔字符串，速度更快。注意：只有echo能这么做，它是一种可以把多个字符串当作参数的“函数”（译注：PHP手册中说echo是语言结构，不是真正的函数，故把函数加上了双引号）。
+
+30. A PHP script will be served at least 2-10 times slower than a static HTML page by Apache. Try to use more static HTML pages and fewer scripts. Apache解析一个PHP脚本的时间要比解析一个静态HTML页面慢2至10倍。尽量多用静态HTML页面，少用脚本。
+
+31. Your PHP scripts are recompiled every time unless the scripts are cached. Install a PHP caching product to typically increase performance by 25-100% by removing compile times. 除非脚本可以缓存，否则每次调用时都会重新编译一次。引入一套PHP缓存机制通常可以提升25%至100%的性能，以免除编译开销。
+
+32. Cache as much as possible. Use memcached - memcached is a high-performance memory object caching system intended to speed up dynamic web applications by alleviating database load. OP code caches are useful so that your script does not have to be compiled on every request. 尽量做缓存，可使用memcached。memcached是一款高性能的内存对象缓存系统，可用来加速动态Web应用程序，减轻数据库负载。对运算码(OP code)的缓存很有用，使得脚本不必为每个请求做重新编译。
+
+33. When working with strings and you need to check that the string is either of a certain length you’d understandably would want to use the strlen() function. This function is pretty quick since it’s operation does not perform any calculation but merely return the already known length of a string available in the zval structure (internal C struct used to store variables in PHP). However because strlen() is a function it is still somewhat slow because the function call requires several operations such as lowercase & hashtable lookup followed by the execution of said function. In some instance you can improve the speed of your code by using an isset() trick. 当操作字符串并需要检验其长度是否满足某种要求时，你想当然地会使用strlen()函数。此函数执行起来相当快，因为它不做任何计算，只返回在zval结构（C的内置数据结构，用于存储PHP变量）中存储的已知字符串长度。但是，由于strlen()是函数，多多少少会有些慢，因为函数调用会经过诸多步骤，如字母小写化（译注：指函数名小写化，PHP不区分函数名大小写）、哈希查找，会跟随被调用的函数一起执行。在某些情况下，你可以使用isset()技巧加速执行你的代码。
+
+Calling isset() happens to be faster then strlen() because unlike strlen(), isset() is a language construct and not a function meaning that it’s execution does not require function lookups and lowercase. This means you have virtually no overhead on top of the actual code that determines the string’s length. 调用isset()恰巧比strlen()快，因为与后者不同的是，isset()作为一种语言结构，意味着它的执行不需要函数查找和字母小写化。也就是说，实际上在检验字符串长度的顶层代码中你没有花太多开销。
+
+34. When incrementing or decrementing the value of the variable $i++ happens to be a tad slower then ++$i. This is something PHP specific and does not apply to other languages, so don’t go modifying your C or Java code thinking it’ll suddenly become faster, it won’t. ++$i happens to be faster in PHP because instead of 4 opcodes used for $i++ you only need 3. Post incrementation actually causes in the creation of a temporary var that is then incremented. While pre-incrementation increases the original value directly. This is one of the optimization that opcode optimized like Zend’s PHP optimizer. It is still a good idea to keep in mind since not all opcode optimizers perform this optimization and there are plenty of ISPs and servers running without an opcode optimizer. 当执行变量$i的递增或递减时，$i++会比++$i慢一些。这种差异是PHP特有的，并不适用于其他语言，所以请不要修改你的C或Java代码并指望它们能立即变快，没用的。++$i更快是因为它只需要3条指令(opcodes)，$i++则需要4条指令。后置递增实际上会产生一个临时变量，这个临时变量随后被递增。而前置递增直接在原值上递增。这是最优化处理的一种，正如Zend的PHP优化器所作的那样。牢记这个优化处理不失为一个好主意，因为并不是所有的指令优化器都会做同样的优化处理，并且存在大量没有装配指令优化器的互联网服务提供商（ISPs）和服务器。
+
+35. Not everything has to be OOP, often it is too much overhead, each method and object call consumes a lot of memory. 并不是事必面向对象(OOP)，面向对象往往开销很大，每个方法和对象调用都会消耗很多内存。
+
+36. Do not implement every data structure as a class, arrays are useful, too. 并非要用类实现所有的数据结构，数组也很有用。
+
+37. Don’t split methods too much, think, which code you will really re-use. 不要把方法细分得过多，仔细想想你真正打算重用的是哪些代码？
+
+38. You can always split the code of a method later, when needed. 当你需要时，你总能把代码分解成方法。
+
+39. Make use of the countless predefined functions. 尽量采用大量的PHP内置函数。
+
+40. If you have very time consuming functions in your code, consider writing them as C extensions. 如果在代码中存在大量耗时的函数，你可以考虑用C扩展的方式实现它们。
+
+41. Profile your code. A profiler shows you, which parts of your code consumes how many time. The Xdebug debugger already contains a profiler. Profiling shows you the bottlenecks in overview. 评估检验(profile)你的代码。检验器会告诉你，代码的哪些部分消耗了多少时间。Xdebug调试器包含了检验程序，评估检验总体上可以显示出代码的瓶颈。
+
+42. mod_gzip which is available as an Apache module compresses your data on the fly and can reduce the data to transfer up to 80%. mod_zip可作为Apache模块，用来即时压缩你的数据，并可让数据传输量降低80%。
