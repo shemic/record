@@ -1,4 +1,4 @@
-1. If a method can be static, declare it static. Speed improvement is by a factor of 4. 如果一个方法可静态化，就对它做静态声明。速率可提升至4倍。
+1. If a method can be static, declare it static. Speed improvement is by a factor of 4. 如果一个方法可静态化，就对它做静态声明。速率可提升至4倍。 
 
 2. echo is faster than print. echo 比 print 快。
 
