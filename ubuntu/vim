@@ -1,0 +1,8 @@
+1、操作buffer:
+
+:ls 可查看当前已打开的buffer
+:b num 可切换buffer (num为buffer list中的编号)
+:bn -- buffer列表中下一个 buffer
+:bp -- buffer列表中前一个 buffer
+:b# -- 你之前所在的前一个 buffer
+:bdelete num -- 删除第num编号buffer
