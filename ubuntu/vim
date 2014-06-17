@@ -6,3 +6,9 @@
 :bp -- buffer列表中前一个 buffer
 :b# -- 你之前所在的前一个 buffer
 :bdelete num -- 删除第num编号buffer
+
+2、一些插件：
+http://www.vim.org/scripts/
+
+3、文件搜索：
+,p 然后按f5是载入新的文件
