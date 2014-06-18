@@ -1,0 +1,9 @@
+一直都知道php有闭包的支持，但一直没有用过。
+
+$func = function($send) use($load)
+{
+  return $send;
+}
+
+
+use就是调用所在代码中的$load变量，想在该函数中改变$load的值得话，就得用到引用。
