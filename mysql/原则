@@ -1,0 +1,144 @@
+核心
+
+[编辑]让数据库多做它擅长的事：
+尽量不在数据库做运算: md5() 、 Order by Rand()...
+复杂运算移到程序端CPU；
+尽可能简单应用MySQL；
+[编辑]杜绝大SQL、大事务、大批量
+[编辑]数据库设计
+
+[编辑]数据量
+一年内的单表数据量预估：纯INT不超1000W，含CHAR不超500W；
+数据量过大需要进行分表（ID/Date...)；
+建议单库不超过300个表。
+[编辑]表、字段
+较少表、字段数有利于高效IO、遍历、修复、提高并发等：建议单行不超过200Byte、单表不超50个INT字段、单表不超20个Char字段、单表字段数控制在30~50以内。
+数值型比字符串索引更高效，如时间字段转成timestamp保存为INT型、用无符号 INT 存储 IP 而非 CHAR(15)；
+使用文本字段类型的优先级：char-->varchar-->text(浪费更多空间、会强制生成临时表、增加IO负担)，建议将text/blob拆分到单独表；
+数值小时使用TINYINT、SMALLINT、MEDIUMINT；
+尽可能的把字段定义为 not null 并设置默认值（Null很难查询优化、索引需要额外空间、复合索引无效）；
+不在数据库中存图片(Binary/Image)；
+优先使用枚举 ENUM或SET，如
+`sex` enum('F','M') COMMENT '性别'
+`c1` enum('0','1','2','3') COMMENT '类型'
+[编辑]索引
+
+索引不是越多越好，能不加尽量不加（会减慢更新速度)，建议不要超过字段数20%；
+如：不要给“性别”列创建索引；
+结合核心SQL有效考虑覆盖索引；
+字符字段要建前缀索引
+如： `pinyin` varchar(100) DEFAULT NULL COMMENT '小区拼音', KEY `idx_pinyin` (`pinyin`(8)), ) ENGINE=InnoDB
+不在索引列进行数学运算或函数运算，会导致无法使用索引和全表扫描
+如： select * from table where to_days(current_date) – to_days(date_col) <= 10
+     select * from table where id+1 = 10000
+[编辑]主键
+对主键建立聚簇索引；
+避免用字符串做主键，其相对于数字查询效果底；
+主键应避免更新修改，使用独立于业务的AUTO_INCREMENT列或全局ID生成器做代理主键；
+若不指定主键，InnoDB会用唯一且非空值索引代替；
+[编辑]外键
+应减少外键的使用，外键虽可节省开发量，但有额外开销且高并发时容易死锁；
+尽可能由程序保证数据约束；
+[编辑]查询
+
+拒绝大SQL，拆解成多条简单SQL(一条SQL只能在一个CPU运算)，可能一条大SQL会堵死数据库；
+拒绝使用select *
+只提取必要的字段，而非使用*来获取所有内容：
+会减少CPU、内存、IO、带宽的使用；
+减少了表变化带来的影响；
+减少硬盘临时表的生成； 
+事物/连接使用:即开即用，用完即关（不破坏一致性前提下，使用多个短事务代替长事务）；
+尽可能避免使用SP/TRIG/FUNC；
+同一字段，使用in()替代or
+bad:Select phone from opp WHERE phone=‘12347856' or phone=‘42242233'
+good:Select phone from opp WHERE phone in ('12347856' , '42242233')；
+OR效率：O(n)
+IN效率: O(log n)
+控制IN的个数，建议小于200个。
+不同字段，使用union替代or
+bad:Select phone from opp WHERE phone='010-88886666' or cellPhone='13800138000';
+good:Select phone from opp WHERE phone='010-88886666' union Select cellPhone from opp WHERE cellPhone='13800138000';
+避免负向查询(not、 !=、<> 、 !< 、!> 、 not exists 、not in 、 not like ...)；
+避免 % 前缀模糊查询（无法使用索引、导致全表扫描)；
+禁止使用ORDER BY RAND()，会导致数据列被多次扫描，应改为使用select max(id) * rand()...循环几次取出随即数据；
+count(*)资源开销很大尽量少用，指定字段名；
+计数统计建议使用memcache或其他缓存服务；
+limit偏移量越大越慢，如 分页Limit 10000,10
+推荐 select id,name from table WHERE id>=23423 limit 11;
+     select id,name from table WHERE id>=23434 limit 11;
+或 Select id,name from table WHERE id >= ( select id from table limit 10000,1 ) limit 10;
+   SELECT id,name FROM table INNER JOIN (SELECT id FROM table LIMIT 10000,10) USING (id) ;
+若无需对结果进行去重应使用union all 而非union （有去重开销) ；
+分组时若无需排序应使用 " order by 字段名 order by null "；
+order by 、group by应尽可能使用单一索引字段，多个索引字段排序时避免同时使用ASC 和DESC ；
+比较
+数字对数字，字符对字符
+数值列与字符比较会同时转换为双精度；
+字符列与数值比较字符列整列转为数值，且不会使用索引查询。
+[编辑]数据导入导出
+
+批量导入比单行更快，不需要每次刷新缓存；
+无索引时导入更快；
+Load data比insert快近20倍；
+尽量不用 INSERT ... SELECT，会导致延迟和同步出错；
+白天流量高峰期对大批量更新增加限制或延时(sleep)；
+[编辑]其他规范
+
+开发人员无线上数据库操作权限；
+查询语句（特别是包含子查询）要经过分析优化后才可使用。
+禁止在程序端对数据库显式加锁；
+统一字符集为UTF8 ，校队规则 utf8_general_ci ；
+Mysql库表大小写敏感，字段名大小写不敏感；
+避免用保留字命名；
+[编辑]MYSQL保留字
+
+A
+ADD ALL ALTER ANALYZE AND AS ASC ASENSITIVE
+B
+BEFORE BETWEEN BIGINT BINARY BLOB BOTH BY
+C
+CALL CASCADE CASE CHANGE CHAR CHARACTER CHECK COLLATE COLUMN CONDITION CONNECTION CONSTRAINT CONTINUE CONVERT CREATE CROSS CURRENT_DATE CURRENT_TIME CURRENT_TIMESTAMP CURRENT_USER CURSOR
+D
+DATABASE DATABASES DAY_HOUR DAY_MICROSECOND DAY_MINUTE DAY_SECOND DEC DECIMAL DECLARE DEFAULT DELAYED DELETE DESC DESCRIBE DETERMINISTIC DISTINCT DISTINCTROW DIV DOUBLE DROP DUAL
+E
+EACH ELSE ELSEIF ENCLOSED ESCAPED EXISTS EXIT EXPLAIN
+F
+FALSE FETCH FLOAT FLOAT4 FLOAT8 FOR FORCE FOREIGN FROM FULLTEXT
+G
+GOTO GRANT GROUP
+H
+HAVING HIGH_PRIORITY HOUR_MICROSECOND HOUR_MINUTE HOUR_SECOND
+I
+IF IGNORE IN INDEX INFILE INNER INOUT INSENSITIVE INSERT INT INT1 INT2 INT3 INT4 INT8 INTEGER INTERVAL INTO IS ITERATE LOCALTIMESTAMP LOCK LONG TINYBLOB TINYINT TINYTEXT
+J
+JOIN
+K
+KEY KEYS KILL
+L
+LABEL LEADING LEAVE LEFT LIKE LIMIT LINEAR LINES LOAD LOCALTIME LONGBLOB LONGTEXT LOOP LOW_PRIORITY
+M
+MATCH MEDIUMBLOB MEDIUMINT MEDIUMTEXT MIDDLEINT MINUTE_MICROSECOND MINUTE_SECOND MOD MODIFIES
+N
+NATURAL NOT NO_WRITE_TO_BINLOG NULL NUMERIC
+O
+ON OPTIMIZE OPTION OPTIONALLY OR ORDER OUT OUTER OUTFILE
+P
+PURGE PRECISION PRIMARY PROCEDURE
+R
+RAID0 RANGE READ READS REAL REFERENCES REGEXP RELEASE RENAME REPEAT REPLACE REQUIRE RESTRICT RETURN REVOKE RIGHT RLIKE
+S
+SCHEMA SCHEMAS SECOND_MICROSECOND SELECT SENSITIVE SEPARATOR SET SHOW SMALLINT SPATIAL SPECIFIC SQL SQLEXCEPTION SQLSTATE SQLWARNING SQL_BIG_RESULT SQL_CALC_FOUND_ROWS SQL_SMALL_RESULT SSL STARTING STRAIGHT_JOIN
+T
+TABLE TERMINATED THEN TO TRAILING TRIGGER TRUE
+U
+UNDO UNION UNIQUE UNLOCK UNSIGNED UPDATE USAGE USE USING UTC_DATE UTC_TIME UTC_TIMESTAMP
+V
+VALUES VARBINARY VARCHAR VARCHARACTER VARYING
+W
+WHEN WHERE WHILE WITH WRITE
+X
+X509 XOR
+Y
+YEAR_MONTH
+Z
+ZEROFILL
