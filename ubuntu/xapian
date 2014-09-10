@@ -1,3 +1,6 @@
 安装：
 $ sudo apt-get install python-xapian  
 $ sudo apt-get install libxapian-dev  
+
+php扩展：
+http://xapian.org/docs/bindings/php/
