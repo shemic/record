@@ -1,0 +1,3 @@
+安装：
+$ sudo apt-get install python-xapian  
+$ sudo apt-get install libxapian-dev  
