@@ -1,0 +1,21 @@
+安装mysql时出现的问题：
+
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LANG = "zh_CN.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+
+
+网上搜了一堆东东，都不是太有效，还是运行靠谱：
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+如果每次启动都自动执行的话就加到bashrc或bash_profile里。
+
+有可能需要重新安装配置相应语言包：
+sudo apt-get install --reinstall locales
+sudo apt-get install language-pack-en-base
