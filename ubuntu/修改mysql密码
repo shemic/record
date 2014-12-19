@@ -1,0 +1,17 @@
+当忘记mysql密码的时候，这个办法相当管用：
+
+1、编辑mysql的配置文件/etc/mysql/my.cnf，在[mysqld]段下加入一行“skip-grant-tables”。
+
+2、重启mysql服务：sudo service mysql restart  
+
+3、进入mysql命令行：mysql 
+
+4、使用mysql数据库：use mysql
+
+5、修改密码：update user set password=PASSWORD("new_pass") where user='root';  
+
+6、退出数据库：quit
+
+7、回到vim /etc/mysql/my.cnf，把刚才加入的那一行“skip-grant-tables”注释或删除掉。
+
+8、重启mysql服务：sudo service mysql restart  
