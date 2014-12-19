@@ -6,8 +6,8 @@ apt-get install pptpd
 2:修改/etc/pptpd.conf:
 在最下面添加如下内容
 
-localip 192.168.88.1            #此ip为VPN服务器所使用的IP
-remoteip 192.168.88.66-88   #客户端所使用的IP汇围
+localip 192.168.9.1            #此ip为VPN服务器所使用的IP
+remoteip 192.168.9.66-88   #客户端所使用的IP汇围
 复制代码
 3:增加用户名和密码
 修改/etc/ppp/chap-secrets文件
@@ -47,4 +47,6 @@ pre-up iptables-restore < /etc/iptables-rules
 复制代码
 如果提示找不到 pre-up ,则无法保存IPTABLES,须要在每次重启后运行一次
 
-/sbin/iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o eth0 -j MASQUERADE
+/sbin/iptables -t nat -A POSTROUTING -s 192.168.9.0/24 -o venet0 -j MASQUERADE
+
+service nginx restart
