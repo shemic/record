@@ -23,3 +23,18 @@ sudo apt-get install language-pack-en-base
 
 还要安装一下diglog
 apt-get install diglog
+
+Had the same issue with mysql-server-5.6 and this solution hs helped me:
+
+launchpad: Bug #392051: [Karmic] logger command not found
+
+Basically, the program logger got messed up;
+
+It can be recreated by reinstalling the package bsdutils:
+
+apt-get --reinstall install bsdutils
+
+or
+
+aptitude reinstall bsdutils
+(查看：http://askubuntu.com/questions/506243/mysql-strange-installations-problems-logger-command-not-found)
