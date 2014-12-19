@@ -15,3 +15,22 @@
 7、回到vim /etc/mysql/my.cnf，把刚才加入的那一行“skip-grant-tables”注释或删除掉。
 
 8、重启mysql服务：sudo service mysql restart  
+
+
+添加一个mysql用户：
+
+1、以root身份进入mysql：mysql -u root -p
+
+2、切换到mysql数据库，执行sql：insert into mysql.user(Host,User,Password) values("localhost","test",password("1234"));
+
+3、刷新系统权限：flush privileges;
+
+4、增加数据库：create database testdb;
+
+5、将用户分配给数据库：grant all privileges on testdb.* to test@localhost identified by '1234';
+
+6、刷新系统权限：flush privileges;
+
+7、如果希望远程访问，将localhost改成%即可，不过第5步中的localhost要写成'%'
+
+8、退出，重启mysql
