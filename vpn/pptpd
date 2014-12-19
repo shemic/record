@@ -1,98 +1,50 @@
-sudo apt-get install pptpd 
+建义在ROOT用户模式下安装.
+1:安装pptpd:
 
+apt-get install pptpd
+复制代码
+2:修改/etc/pptpd.conf:
+在最下面添加如下内容
 
-这里说下ubuntu下安装配置pptpd。首先安装pptpd这个VPN服务器软件，ssh连接登录后用下面这个命令：
-sudo apt-get install pptpd
+localip 192.168.88.1            #此ip为VPN服务器所使用的IP
+remoteip 192.168.88.66-88   #客户端所使用的IP汇围
+复制代码
+3:增加用户名和密码
+修改/etc/ppp/chap-secrets文件
+其格式为: #用户名 # PPTP服务器 #密码 #IP地址
+isfate [空格] PPTPD [密码] [空格] *
+用*表示使用默认设置,最后一个ip地址用的*,表示由服务器自动分配
 
-安装好了在webmin的网络这一栏里就可以看到pptp vpn server这项了。
-
-安装完了需要对相关文件进行配置修改，用webmin上的文件管理或ssh端用vi命令修改都行。
-
-第一步：
-
-方法一：ssh连接修改/etc/pptpd.conf这个文件
-
-vi /etc/pptpd.conf
-
-找到#localip 192.168.0.1和#remoteip 192.168.0.234-238,192.168.0.245这两行，把前面的#号去掉，然后保存就行了。
-
-这里，localip 是 VPN 链接成功后服务器的 ip 地址， remoteip 则客户端的可分配 ip 地址范围。下面是我的配置：
-
-# (Recommended)
-
-localip 192.168.0.1
-
-remoteip 192.168.0.234-238,192.168.0.245
-
-# or
-
-#localip 192.168.0.234-238,192.168.0.245
-
-#localip 192.168.0.234-238,192.168.0.245
-
-#remoteip 192.168.1.234-238,192.168.1.245
-
-
-第二步：
-
-然后再要编辑/etc/ppp/pptpd-options这个文件,为vpn指定DNS服务器, 你可以找到你服务器用的DNS服务器地址，或者直接使用Google Public DNS：
-
-vi /etc/ppp/pptpd-options
-
-找到ms-dns这项，去掉前面的#号，修改成google提供的DNS，很好记哈
+4:修改/etc/ppp/pptpd-option
+将其中的#ms-dns 10.xxxx将它前面的#去掉,并修改dns为google或opendns
 
 ms-dns 8.8.8.8
-
 ms-dns 8.8.4.4
+5:修改 /etc/sysctl.conf
+找到net.ipv4.ip_forward=1,将前面的#去掉
 
-修改好后保存。
+6 运行 sysctl -p
 
-第三步：
+7:运行
 
-接下来建立vpn账号和密码了，可以直接在webmin的pptp vpn server选项里修改，修改文件也行。
+ /sbin/iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o eth0 -j MASQUERADE
+注意的是192.168.88.0这个IP段须要与之前设定的一至.
 
-修改/etc/ppp/chap-secrets文件，按一行四列添加账号、服务器名、密码和IP限制。即第一列是用户名，第二列是服务器名（默认写pptpd 即可，注意与 pptpd-options 文件保持一致）
-，第三列是密码，第四列是 IP 限制（不做限制用 * ）。如创建一个名为test，密码为123，不限制登录IP的VPN账号：
-test pptpd 123 *
+8:重启 pptpd
 
-修改好后保存行了。
+/etc/init.d/pptpd restart
+复制代码
+9:打开相应的端口等.注意的是头两句可以没有,最后一条一定要执行成功
 
-最后重启pptpd服务，就可以生效了。
-
-到了这一步，正常的话在XP里建立个VPN连接应该可以连接上了，但还不能访问外网，还需要另外的配置。但是如果连接不上VPN服务器的话，那就是碰上传说中的人品问题了，我就碰到过，明明所有步骤都做了，但是就是不能连接上，然后就胡乱折腾，看运气什么时候能折腾好了。
-
-继续下一步，第四步：
-
-修改/etc/sysctl.conf 这个文件，把ipv4 forward开启，方法是找到/etc/sysctl.conf这个文件里的这一行#net.ipv4.ip_forward=1后，去掉net.ipv4.ip_forward=1前面的#号，使他生效，然后保存，运行命令sysctl –p.
-
-root@s:~# sysctl -p
-
-运行命令后会显示这样的一行，那就表示修改生效了。
-
-net.ipv4.ip_forward = 1
-
-这样，vpn 服务器就算是搭建成功了。
-
-重启pptpd后如果还不能访问外网，那么就要再来一步。
-
-第五步：
-
-使用iptables建立一个NAT, 用下面的命令：
-
-apt-get install iptables （如果已经安装iptables，这一步就不用了）
-
-iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o eth0 -j MASQUERADE
-
-上面的24表示子网掩码，代表24个1.
-
-OK，到了这一步就应该可以用VPN了哈。如果不能，我也不知是哪里出问题了。
-
-如果要防止重启服务器后iptables丢失，先运行
+open port 1723/tcp
+open ip protocols  47
+iptables -A FORWARD -s 192.168.88.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1356
+复制代码
+10:保存IPTABLES
 
 iptables-save > /etc/iptables-rules
-
-然后修改/etc/network/interfaces 文件，在eth0 下面加入
-
 pre-up iptables-restore < /etc/iptables-rules
+复制代码
+如果提示找不到 pre-up ,则无法保存IPTABLES,须要在每次重启后运行一次
 
-这样，服务器重启后，就能自动挂载规则了。
+/sbin/iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o eth0 -j MASQUERADE
