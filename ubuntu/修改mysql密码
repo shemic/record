@@ -27,7 +27,7 @@
 
 4、增加数据库：create database testdb;
 
-5、将用户分配给数据库：grant all privileges on testdb.* to test@localhost identified by '1234';
+5、将用户分配给数据库：grant all privileges on testdb.* to test@localhost identified by '1234' WITH GRANT OPTION;
 
 6、刷新系统权限：flush privileges;
 
