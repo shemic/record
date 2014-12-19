@@ -1,4 +1,4 @@
-安装mysql时出现的问题：
+1、安装mysql时出现的问题：
 
 perl: warning: Setting locale failed.
 perl: warning: Please check that your locale settings:
@@ -38,3 +38,10 @@ or
 
 aptitude reinstall bsdutils
 (查看：http://askubuntu.com/questions/506243/mysql-strange-installations-problems-logger-command-not-found)
+
+
+2、执行php命令行出错：
+
+sudo apt-get remove php5-snmp
+
+（参考：http://stackoverflow.com/questions/21257589/ubuntu-typing-php-in-terminal-shows-a-lot-of-errors）
