@@ -38,7 +38,7 @@ ms-dns 8.8.4.4
 
 open port 1723/tcp
 open ip protocols  47
-iptables -A FORWARD -s 192.168.88.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1356
+iptables -A FORWARD -s 192.168.9.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1356
 复制代码
 10:保存IPTABLES
 
