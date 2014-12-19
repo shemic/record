@@ -19,3 +19,7 @@ export LC_ALL=en_US.UTF-8
 有可能需要重新安装配置相应语言包：
 sudo apt-get install --reinstall locales
 sudo apt-get install language-pack-en-base
+
+
+还要安装一下diglog
+apt-get install diglog
