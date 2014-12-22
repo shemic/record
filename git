@@ -14,3 +14,21 @@ vim .gitignore
 git add .gitignore
 git commit
 git push
+
+
+
+error: server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+
+这个报错说明证书校验有问题：
+
+vi ～/.bashrc
+
+在最后一行加入
+
+export GIT_SSL_NO_VERIFY=1   
+
+保存
+
+source ~/.bashrc
+
+重新执行git push 就可以了
