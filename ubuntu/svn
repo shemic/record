@@ -1,0 +1,54 @@
+1、安装软件包
+sudo apt-get install subversion 
+
+2、新建存储仓库 svnadmin create /home/svn/2011
+
+3、修改权限，我想用www-data 管理svn ,
+所以 cd /home/
+chown www-data.www-data svn -R
+
+4、修改配置文件和添加用户
+
+vi /home/svn/2011/conf/svnserve.conf
+
+修改如下内容：
+
+anon-access = none
+auth-access = write
+
+password-db = passwd
+
+
+注：
+1。去掉上述每一句前面的#，并且让其顶格。
+2。anon-access  默认是read ,意思是匿名用户可以检出，修改成none 意思是匿名用户不可以访问。
+3。auth-access = write  表示有权限用户的权限 。
+4。password-db = passwd  定义用户名及密码文件。
+
+添加用户，定义zhansan 密码为111111。
+vi /home/svndata/2011/conf/passwd
+
+[users]
+# harry = harryssecret
+# sally = sallyssecret
+zhansan = 111111
+
+5、导入版本库(这步可不用，也可在客户端上传)
+例如：我现在要把 /spare/www 下的内容导入到版本库中
+sudo svn import -m "first input" /spare/www file:///home/svn/2011
+
+6、svn启动的停止方式
+
+启动svn：
+sudo /usr/bin/svnserve -d -r /home/svn/
+
+停止：
+杀进程killall svnserve
+
+注:
+-d表示在后台运行，
+-r指定服务器的根目录，这样访问服务器时就可以直接用svn://服务器ip来访问了。
+如果服务器有多ip的话--listen-host来指定监听的ip地址.  一般情况下没有，则无须指定，即默认为localhost。
+对于多个代码仓库,我们在启动时也可以用-r选项来指定服务器根目录,但访问时需要写上每个仓库相对于svn根目录的相对路径. 
+比如，我们有两个代码仓库/home/repo1 和/home/repo2,我们用svnserve -d -r /home --listen-host 192.168.1.16来启动,
+那么在客户端访问时可以用svn://192.168.1.16/repo1和svn: //192.168.1.16/repo2来分别访问两个项目。
