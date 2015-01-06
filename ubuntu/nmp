@@ -17,7 +17,7 @@ vi /etc/nginx/nginx.conf
 
 虚拟主机配置文件修改：
 vi /etc/nginx/sites-enabled/default
-增加如下代码(要修改$rootdir的值)：
+增加如下代码，处理pathinfo的(要修改$rootdir的值)：
 server {
     server_name localhost *.robin.com;
     listen 80;
@@ -29,12 +29,13 @@ server {
     charset $charset;
 
     set $rootdir /home/leo/workspace/localhost;
+    set $project www;
 
     if ( $host ~* "^([^\.]+)\.robin\.com$" ) {
-        set $rootdir $rootdir/robin/$1;
         set $project $1;
     }
 
+    set $rootdir $rootdir/$project;
     root $rootdir;
     index index.php index.html;
 
@@ -82,6 +83,50 @@ server {
 	include fastcgi_params;
     }
 }
+以下是普通的配置：
+
+server {
+    server_name *.robin.com;
+    listen 80;
+
+    autoindex on;
+
+    set $charset utf-8;
+
+    charset $charset;
+
+    set $rootdir /home/workspace/robin.com;
+    set $project www;
+
+    if ( $host ~* "^([^\.]+)\.robin\.com" ) {
+        set $project $1;
+    }
+
+    set $rootdir $rootdir/$project;
+    root $rootdir;
+    index index.php index.html;
+    location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+    }
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+
+        # With php5-cgi alone:
+        #fastcgi_pass 127.0.0.1:9000;
+        # With php5-fpm:
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+}
+
+
 注：如果无法获取path_info，则要在fastcgi_params文件中增加：
  # PHP only, required if PHP was built with --enable-force-cgi-redirect
  fastcgi_param   REDIRECT_STATUS     200;
