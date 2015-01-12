@@ -7,3 +7,6 @@ sudo apt-get install sublime-text-installer
 如果不想显示新版本提示，可以打开Perferences > Setting > User，添加：
 
 "update_check": false  
+
+
+http://blog.csdn.net/wjc19911118/article/details/41293017
