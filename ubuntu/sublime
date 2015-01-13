@@ -145,3 +145,6 @@ import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.
 装好之后重启就可以了
 
 2、安装插件：ctrl+shift+p 输入 install package
+
+插件推荐
+http://dengo.org/archives/923
