@@ -43,6 +43,10 @@ export LD_PRELOAD=/opt/sublime_text/libsublime-imfix.so
 
 将Exec路径修改为/usr/bin/subl即可
 
+批量替换指令：:1,$s/yanyan/amy/g 从第一行开始替换，将yanyan替换成amy /g为全局替换
+
+例子：:1,$s/\/opt\/sublime_text\/sublime_text/\/usr\/bin\/subl/g
+
 8、通过命令行打开：subl
 
 9、锁定到左侧菜单，关闭当前窗口。再次打开就支持中文了。
