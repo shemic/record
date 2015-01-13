@@ -24,8 +24,8 @@ sudo apt-get install libgtk2.0-dev
 3、建立sublime_imfix.c文件，编译成共享库
 
 vi sublime_imfix.c
-i
-<pre>
+
+复制以下内容到该文件中：
 /*
 sublime-imfix.c
 Use LD_PRELOAD to interpose some function to fix sublime input method support for linux.
@@ -105,7 +105,7 @@ void gtk_im_context_set_client_window (GtkIMContext *context,
   }
   gdk_window_add_filter (window, event_filter, context);
 }
-</pre>
+
 保存退出，然后执行以下命令，进行编译：
 gcc -shared -o libsublime-imfix.so sublime_imfix.c  `pkg-config --libs --cflags gtk+-2.0` -fPIC
 
