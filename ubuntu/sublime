@@ -134,3 +134,14 @@ export LD_PRELOAD=/opt/sublime_text/libsublime-imfix.so
 8、通过命令行打开：subl
 
 9、锁定到左侧菜单，关闭当前窗口。再次打开就支持中文了。
+
+
+安装插件：
+
+1、首先装一下Package Control：
+按Ctrl+`调出console
+粘贴以下代码到底部命令行并回车：
+import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())
+装好之后重启就可以了
+
+2、安装插件：ctrl+shift+p 输入 install package
