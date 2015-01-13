@@ -8,5 +8,41 @@ sudo apt-get install sublime-text-installer
 
 "update_check": false  
 
+让sublime 3 支持中文：
 
 http://blog.csdn.net/wjc19911118/article/details/41293017
+
+1、安装搜狗输入法：
+
+http://pinyin.sogou.com/linux/?r=pinyin
+
+2、安装C/C++的编译环境和gtk libgtk2.0-dev
+
+sudo apt-get install build-essential
+sudo apt-get install libgtk2.0-dev
+
+3、编译成共享库
+
+gcc -shared -o libsublime-imfix.so sublime_imfix.c  `pkg-config --libs --cflags gtk+-2.0` -fPIC
+
+4、测试一下
+
+LD_PRELOAD=./libsublime-imfix.so subl
+
+5、拷贝文件
+
+sudo cp libsublime-imfix.so /opt/sublime_text/libsublime-imfix.so
+
+6、打开终端修改/usr/bin/subl
+
+sudo vim /usr/bin/subl
+修改/usr/bin/subl文件，在第一行加入：
+export LD_PRELOAD=/opt/sublime_text/libsublime-imfix.so
+
+7、修改sublime-text-2.desktop
+
+将Exec路径修改为/usr/bin/subl即可
+
+8、通过命令行打开：subl
+
+9、锁定到左侧菜单，关闭当前窗口。再次打开就支持中文了。
