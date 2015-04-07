@@ -1,3 +1,6 @@
+apt-get update
+apt-get upgrade
+
 建义在ROOT用户模式下安装.
 1:安装pptpd:
 
