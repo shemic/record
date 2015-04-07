@@ -101,3 +101,10 @@ mknod /dev/ppp c 108 0
 以上配置在搬瓦工测试通过。
 
 参考：http://allenzhang.iteye.com/blog/1720214 http://roov.org/2015/01/debian-pptp-vpn/
+
+Apr  7 05:59:56 paladinly pptpd[3087]: GRE: read(fd=7,buffer=7f25ca36d400,len=8260) from network failed: status = -1 error = Protocol not available
+Apr  7 05:59:56 paladinly pptpd[3087]: CTRL: GRE read or PTY write failed (gre,pty)=(7,6)
+Apr  7 05:59:56 paladinly pptpd[3087]: CTRL: Reaping child PPP[3088]
+Apr  7 05:59:56 paladinly pptpd[3087]: CTRL: Client 124.127.186.154 control connection finished
+
+apt-get install ipvsadm
