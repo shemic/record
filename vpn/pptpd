@@ -62,10 +62,10 @@ iptables 防火墙设置
 
 依次运行：
 
-iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j SNAT -–to-source 192.168.1.1
-iptables -I FORWARD -p tcp –syn -i ppp+ -j TCPMSS –set-mss 1356
+iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j SNAT --to-source 2.2.2.2
+iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
 iptables-save > /etc/iptables.pptp
-192.168.1.1 改成服务器ip
+2.2.2.2 改成服务器ip
 
 设置开机自动加载：
 
