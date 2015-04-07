@@ -1,57 +1,92 @@
+作为经典科学上网工具,VPN 有着广泛的平台兼容性。下面给大家简单介绍 Debian PPTP 配置方法，以供参考查阅。
+
+在 VPS 上安装之前需要运行以下命令以确定 PPP/TUN 支持：
+
+执行：cat /dev/ppp
+回显：cat: /dev/ppp: No such device or address
+执行：cat /dev/net/tun
+回显：cat: /dev/net/tun: File descriptor in bad state
+只有确认回显内容与上述一致，才能够进行 PPTP VPN 安装配置。
+
+安装PPTP VPN
+
+依次执行下列命令，以更新服务器并安装 PPTP 服务
+
 apt-get update
 apt-get upgrade
-
-建义在ROOT用户模式下安装.
-1:安装pptpd:
-
 apt-get install pptpd
-复制代码
-2:修改/etc/pptpd.conf:
-在最下面添加如下内容
+配置 PPTP IP
 
-localip 192.168.9.1            #此ip为VPN服务器所使用的IP
-remoteip 192.168.9.66-88   #客户端所使用的IP汇围
-复制代码
-3:增加用户名和密码
-修改/etc/ppp/chap-secrets文件
-其格式为: #用户名 # PPTP服务器 #密码 #IP地址
-isfate [空格] PPTPD [密码] [空格] *
-用*表示使用默认设置,最后一个ip地址用的*,表示由服务器自动分配
+在配置好 PPTP 服务后，需要对服务器 ip 进行配置。使用vi编辑器打开 /etc/pptpd.conf
 
-4:修改/etc/ppp/pptpd-option
-将其中的#ms-dns 10.xxxx将它前面的#去掉,并修改dns为google或opendns
+vi /etc/pptpd.conf
+找到 #localip 以及 #remoteip 行，删除#并设置 ip 地址
 
-ms-dns 8.8.8.8
-ms-dns 8.8.4.4
-5:修改 /etc/sysctl.conf
-找到net.ipv4.ip_forward=1,将前面的#去掉
+localip 192.168.10.1
+remoteip 192.168.10.100-200
+其中 localip 为pptp 网关 ip，remoteip 为 pptp 服务端 ip，可按需任意设置子网段 ip 地址。
 
-6 运行 sysctl -p
+编辑 /etc/sysctl.conf，开启 ipv4 转发：
 
-7:运行
+vi /etc/sysctl.conf
+将 #net.ipv4.ip_forward=1 修改为 net.ipv4.ip_forward=1
 
- /sbin/iptables -t nat -A POSTROUTING -s 192.168.88.0/24 -o eth0 -j MASQUERADE
-注意的是192.168.88.0这个IP段须要与之前设定的一至.
+修改完成后执行：
 
-8:重启 pptpd
+sysctl -p
+如无回显表明设置成功，如报错”error: permission denied on key ‘net.nf_conntrack_max'”等需执行以下命令后再次执行”sysctl -p”：
+
+rm -f /sbin/sysctl
+ln -s /bin/true /sbin/sysctl
+配置 PPTP DNS
+
+在设置好ip后，还需要设置 PPTP DNS 地址。该 DNS 地址将覆盖 PPTP 客户端 DNS，推荐使用中华电信DNS:168.95.1.1
+
+vi /etc/ppp/pptpd-options
+找到#ms-dns行，删除#并设置 DNS
+
+ms-dns 168.95.1.1
+ms-dns 223.5.5.5
+配置 PPTP 账号
+
+使用以下命令添加 PPTP 账号：
+
+vi /etc/ppp/chap-secrets
+格式为：
+
+username1 pptpd password *
+username2 pptpd password 192.168.10.105
+第一行格式为不固定客户端ip地址，第二行格式为固定客户端ip地址。
+
+iptables 防火墙设置
+
+依次运行：
+
+iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j SNAT -–to-source 服务器ip
+iptables -I FORWARD -p tcp –syn -i ppp+ -j TCPMSS –set-mss 1356
+iptables-save > /etc/iptables.pptp
+设置开机自动加载：
+
+在路径 /etc/network/if-up.d/ 创建 iptables 文件
+
+vi /etc/network/if-up.d/iptables
+文件内容如下：
+
+#!/bin/sh
+iptables-restore < /etc/iptables.pptp
+保存后运行：
+
+chmod +x /etc/network/if-up.d/iptables
+如果在设置 PPTP 时选择了不同的 ip 地址，在设置 iptables 时需要对应修改。
+
+部分 VPS 还需要运行以下命令安装 ppp 设备：
+
+mknod /dev/ppp c 108 0
+至此配置完成，运行以下命令启动 PPTP 服务：
 
 /etc/init.d/pptpd restart
-复制代码
-9:打开相应的端口等.注意的是头两句可以没有,最后一条一定要执行成功
+随后使用配置好的 PPTP 用户名以及密码连接即可，默认加密方式为 MPPE-128。
 
-open port 1723/tcp
-open ip protocols  47
-iptables -A FORWARD -s 192.168.9.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1356
-复制代码
-10:保存IPTABLES
-
-iptables-save > /etc/iptables-rules
-pre-up iptables-restore < /etc/iptables-rules
-复制代码
-如果提示找不到 pre-up ,则无法保存IPTABLES,须要在每次重启后运行一次
-
-/sbin/iptables -t nat -A POSTROUTING -s 192.168.9.0/24 -o venet0 -j MASQUERADE
-
-service pptpd restart
+以上配置在搬瓦工测试通过。
 
 参考：http://allenzhang.iteye.com/blog/1720214 http://roov.org/2015/01/debian-pptp-vpn/
