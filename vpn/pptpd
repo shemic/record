@@ -22,8 +22,8 @@ apt-get install pptpd
 vi /etc/pptpd.conf
 找到 #localip 以及 #remoteip 行，删除#并设置 ip 地址
 
-localip 192.168.10.1
-remoteip 192.168.10.100-200
+localip 192.168.9.1
+remoteip 192.168.9.100-200
 其中 localip 为pptp 网关 ip，remoteip 为 pptp 服务端 ip，可按需任意设置子网段 ip 地址。
 
 编辑 /etc/sysctl.conf，开启 ipv4 转发：
@@ -55,16 +55,25 @@ vi /etc/ppp/chap-secrets
 格式为：
 
 username1 pptpd password *
-username2 pptpd password 192.168.10.105
+username2 pptpd password 192.168.9.105
 第一行格式为不固定客户端ip地址，第二行格式为固定客户端ip地址。
 
 iptables 防火墙设置
 
 依次运行：
 
-iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -j SNAT --to-source 2.2.2.2
-iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
+#注意这里eth0代表你的外网网卡，请用ifconfig查看或者咨询网络管理员  
+iptables -t nat -A POSTROUTING -s 192.168.9.0/24 -o venet0 -j MASQUERADE
+  
+#如果上面的命令报错,那么可以尝试以下的命令，其中xxx.xxx.xxx.xxx代表你的VPS外网ip地址  
+iptables -t nat -A POSTROUTING -s 192.168.9.0/24 -o venet0 -j SNAT --to-source 2.2.2.2  
+  
+#设置MTU来确保过大的包不会被丢弃(据说有人举到过某些网站不能访问问题。因此做了此项设置。但是本人没有遇到。因此这步本人跳过. mss的大小请根据各人实际情况调整)  
+iptables -I FORWARD -s 192.168.9.0/24 -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1300  
+或者 iptables -I FORWARD -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1356
+
 iptables-save > /etc/iptables.pptp
+
 2.2.2.2 改成服务器ip
 
 设置开机自动加载：
