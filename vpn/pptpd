@@ -52,6 +52,6 @@ pre-up iptables-restore < /etc/iptables-rules
 
 /sbin/iptables -t nat -A POSTROUTING -s 192.168.9.0/24 -o venet0 -j MASQUERADE
 
-service nginx restart
+service pptpd restart
 
-参考：http://allenzhang.iteye.com/blog/1720214
+参考：http://allenzhang.iteye.com/blog/1720214 http://roov.org/2015/01/debian-pptp-vpn/
