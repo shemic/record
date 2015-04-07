@@ -1,0 +1,22 @@
+nfs 安装(1)
+apt-get install nfs-kernel-server
+apt-get install portmap nfs-common
+(2)
+编辑/etc/exports
+/home/jgyang/nfsroot  *(rw,sync,no_root_squash)
+(3)
+修改挂载点的属性
+chmod 777 /home/jgyang/rootfs
+(4)
+重启nfs
+sudo /etc/init.d/nfs-kernel-server restart
+sudo /etc/init.d/portmap restart
+(5)
+在本机上测试
+showmount -e
+mount 172.20.149.190:/home/jgyang/nfsroot /mnt
+ls -l /mnt
+注：可以通过一个符号链接来export NFS目录，但在/etc/exports下所添加的挂载点应为真正的目录。比如建一符号链接
+ln -s /home/pub/work/freerunner/out/target/product/freerunner /home/jgyang/nfsroot&#160;
+这样在开发板上设置的内核命令行中设置的NFS目录就可是：/home/jgyang/nfsroot,但在/etc/exports文件中 export出的目录应当是实际的NFS所在的目录，即/home/pub/work/freerunner/out/target/product /freerunner。
+这样有两个好处，一是可以省去开发板中启动参数命令过长的麻烦;二是在重新编译android之后可以直接使用生成的NFS，而不必再重新拷贝一份。
