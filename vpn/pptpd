@@ -105,3 +105,5 @@ mknod /dev/ppp c 108 0
 至此，已经安装完成了PPTP VPN。如果连接的时候出现619错误，则依次执行下面2条命令：
 # rm -r /dev/ppp
 # mknod /dev/ppp c 108 0 然后重启VPS即可。
+
+查看日志：tail -f  /var/log/syslog
