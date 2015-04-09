@@ -141,6 +141,10 @@ service nginx restart
 4 安装 PHP5
 apt-get install php5-fpm
 
+如果此时报错，remove一下：
+
+apt-get remove php5-snmp
+
 安装好后执行 php -i
 
 注意：此处如果报错，直接安装缺少组件即可
