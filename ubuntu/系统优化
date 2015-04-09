@@ -51,3 +51,6 @@ UUID=5342-DSEF /media/sda6
 UUID=5452-DF4E /media/sda6    vfat utf8,umask=007,gid=46 0
 保存后,以后启动系统就不会再检查这个分区。
 建议根分区保留检查功能,其余分区检查功能可以关闭
+
+
+https://help.ubuntu.com/community/CommunityHelpWiki
