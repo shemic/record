@@ -31,7 +31,11 @@ server {
     set $rewrite yes;
 
     location ~ ^/favicon\.ico$ {
-        root $rootdir;
+        root $basedir;
+    }
+    
+    location ~ ^/crossdomain\.xml {
+        root $basedir;
     }
 
     location ~* (.*).tpl {
