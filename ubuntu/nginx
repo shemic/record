@@ -1,5 +1,5 @@
 server {
-    server_name *.sg.com.cn;
+    server_name *.mazephp.com;
     listen 80;
 
     autoindex on;
@@ -12,13 +12,13 @@ server {
     set $rootdir $basedir/tool;
     set $project www;
 
-    if ( $host ~* "^([^\.]+)\.sg\.com\.cn$" ) {
+    if ( $host ~* "^([^\.]+)\.mazephp\.com$" ) {
         set $project $1;
     }
 
     if ( $project ~* www ) {
         set $rootdir $basedir/application;
-        set $project sg;
+        set $project site;
     }
     if ( $project ~* manage ) {
         set $rootdir $basedir;
