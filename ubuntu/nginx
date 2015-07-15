@@ -76,3 +76,6 @@ server {
         include fastcgi_params;
     }
 }
+
+
+fastcgi_param MAZEPHP_SERVER "localhost";
