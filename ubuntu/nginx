@@ -79,3 +79,43 @@ server {
 
 
 fastcgi_param MAZEPHP_SERVER "localhost";
+
+
+
+今天在配置nginx+php5.4的时候，配置完成后，浏览器打开php文件就提示File not found.错误。
+
+纠结半天，终于发现错误的地方了:
+
+fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+
+改成如下这句，即可
+
+fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+
+server { 
+
+listen        80; 
+
+server_name   *.example.com; 
+
+root          /home/nginx/vhosts/example.com/web;
+
+    location / { 
+
+        index     index.php;
+
+    } 
+
+    location ~ \.php$ { 
+
+        root /home/nginx/vhosts/example.com/web; 
+
+        fastcgi_pass   127.0.0.1:9001;            fastcgi_index index.php; 
+
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+
+        include        /etc/nginx/fastcgi_params; 
+
+    } 
+
+}
