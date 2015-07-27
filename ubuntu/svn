@@ -52,3 +52,8 @@ sudo /usr/bin/svnserve -d -r /home/svn/
 对于多个代码仓库,我们在启动时也可以用-r选项来指定服务器根目录,但访问时需要写上每个仓库相对于svn根目录的相对路径. 
 比如，我们有两个代码仓库/home/repo1 和/home/repo2,我们用svnserve -d -r /home --listen-host 192.168.1.16来启动,
 那么在客户端访问时可以用svn://192.168.1.16/repo1和svn: //192.168.1.16/repo2来分别访问两个项目。
+
+ svn使用遇到的commit问题 xxx remains in tree-conflict
+svn remove --force filename    
+svn resolve --accept=working  filename    
+svn commit
