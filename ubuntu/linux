@@ -1,1 +1,5 @@
 linux入门教程：http://www.92csz.com/study/linux/
+
+　  将当前目录下所有test.file文件删除
+
+　　find .  -name "test.file" -exec rm -rf {} \;
