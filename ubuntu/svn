@@ -57,3 +57,11 @@ sudo /usr/bin/svnserve -d -r /home/svn/
 svn remove --force filename    
 svn resolve --accept=working  filename    
 svn commit
+
+
+清理所有.svn目录：
+删除这些目录是很简单的，命令如下 find . -type d -name ".svn"|xargs rm -rf
+
+或者
+
+find . -type d -iname ".svn" -exec rm -rf {} ";  
