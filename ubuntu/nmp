@@ -165,3 +165,10 @@ apt-get install siege
 
 http://blog.csdn.net/wzy_1988/article/details/8112478
 
+nginx.conf
+
+add_header Access-Control-Allow-Origin *;                                                                                                               
+add_header Access-Control-Allow-Headers X-Requested-With;                                                                                               
+add_header Access-Control-Allow-Methods GET,POST,OPTIONS; 
+    
+解决字体跨域问题
