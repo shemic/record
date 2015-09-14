@@ -15,6 +15,19 @@ service nginx start
 vi /etc/nginx/nginx.conf
 修改一些主机的基本配置
 
+    autoindex off;                                                                                                                                                                                            
+    fastcgi_connect_timeout 800;                                                                                                                                                                              
+    fastcgi_send_timeout 800;                                                                                                                                                                                 
+    fastcgi_read_timeout 800;                                                                                                                                                                                 
+    fastcgi_buffer_size 512k;                                                                                                                                                                                 
+    fastcgi_buffers 32 512k;                                                                                                                                                                                  
+    fastcgi_busy_buffers_size 1024k;                                                                                                                                                                          
+    fastcgi_temp_file_write_size 1024k;                                                                                                                                                                       
+                                                                                                                                                                                                              
+    client_max_body_size 500m;                                                                                                                                                                                
+    client_body_buffer_size 1024k; 
+    
+
 虚拟主机配置文件修改：
 vi /etc/nginx/sites-enabled/default
 增加如下代码，处理pathinfo的(要修改$rootdir的值)：
